@@ -39,7 +39,9 @@ function speak(utterance, highlightText) {
             event.type == 'error') {
           chrome.tts.isSpeaking(function(isSpeaking) {
             if (!isSpeaking) {
+				sIndex=sIndex+1;
 			  speak(arrayOfLines[sIndex], true);
+			  
               ttsStatus.textContent = 'Idle';
               ttsStatusBox.classList.remove('busy');
             }
