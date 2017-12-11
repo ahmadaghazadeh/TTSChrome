@@ -1,0 +1,17 @@
+{
+  "manifest_version": 4,
+  "name": "Text-to-Speech",
+  "version": "1.4",
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "app": {
+    "background": {
+      "scripts": ["main.js"]
+    }
+  },
+  "permissions": [
+   "tts",
+   "storage"
+  ]
+}
