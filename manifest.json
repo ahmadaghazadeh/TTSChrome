@@ -1,6 +1,8 @@
 {
   "manifest_version": 4,
   "name": "Text-to-Speech",
+  "description": "Text to Speech with delay author Ahmad Aghazdeh",
+  "author": "Ahmad Aghazdeh ahmad.aghazadeh.a@gmail.com",
   "version": "1.4",
   "icons": {
     "128": "icon_128.png"
