@@ -3,6 +3,8 @@
 <head>
   <title>Text-to-Speech</title>
   <link href="ttsdemo.css" rel="stylesheet" type="text/css"/>
+  <link href="jquery-linedtextarea.css" type="text/css" rel="stylesheet" />
+  
 </head>
 
 <body>
@@ -22,7 +24,9 @@
     <div class="body_inner">
 
       Enter text here:
-      <textarea id="srctext" rows="20" cols="40">This is a demo of text-to-speech.</textarea>
+      <textarea class="lined" id="srctext" rows="20" cols="40">This is a demo of text-to-speech.
+	  This is a demo of text-to-speech.
+	  This is a demo of text-to-speech.</textarea>
 
       <p>
         <button id="speak" class="large_button">Speak</button>
@@ -93,6 +97,9 @@
   </div>
 </div>
 
-<script src="ttsdemo.js"></script>
+
+<script src="jquery.min.js"></script>
+<script src="jquery-linedtextarea.js"></script>
+ <script src="ttsdemo.js"></script>
 </body>
 </html>

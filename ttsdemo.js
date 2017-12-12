@@ -39,7 +39,12 @@ function speak(utterance, highlightText) {
             event.type == 'error') {
           chrome.tts.isSpeaking(function(isSpeaking) {
             if (!isSpeaking) {
-				sIndex=sIndex+1;
+			  sIndex=sIndex+1;
+			  
+			  $(".lined").linedtextarea(
+		         {selectedLine: sIndex}
+	          );
+	
 			  speak(arrayOfLines[sIndex], true);
 			  
               ttsStatus.textContent = 'Idle';
@@ -50,7 +55,10 @@ function speak(utterance, highlightText) {
     }
   };
   console.debug(++utteranceIndex, options);
-  var delayTime=Number(delay.value)*1000+  utterance.length/Number(len.value)*1000;
+  var delayTime=Number(delay.value)*1000;
+  if(sIndex>0){
+	  delayTime= delayTime+arrayOfLines[sIndex-1].length/Number(len.value)*1000;
+  }
   setTimeout(function(){
 	  chrome.tts.speak(utterance, options);
 	  ttsStatus.textContent = 'Busy - '+utterance ;
@@ -60,10 +68,14 @@ function speak(utterance, highlightText) {
 
  
 }
+ 
+ 
 
  setTimeout(function(){
 	 chrome.storage.local.get("delay", function(items){
-		delay.value= items;
+		delay.value= items.delay;
+		delayValue.innerHTML=delay.value +" sec";
+		console.log("text delay : "+  items ); 
      });
 	  
 	 chrome.storage.local.get("srctext", function(items){
@@ -73,7 +85,9 @@ function speak(utterance, highlightText) {
       });
 	 
 	 chrome.storage.local.get("len", function(items){
-		len.value= items;
+		len.value= items.len;
+		lenValue.innerHTML="1 / "+len.value +" Weight";
+		console.log("text len : "+  items ); 
      });
 	 
   }, 500);
@@ -94,7 +108,7 @@ document.getElementById('stop').addEventListener('click', function() {
   chrome.tts.stop();
 });
 
-document.getElementById('delay').addEventListener('change', function() {
+delay.addEventListener('change', function() {
    delayValue.innerHTML=delay.value +" sec";
    chrome.storage.local.set({ "delay": Number(delay.value) }, function(){
     console.log("delay save : "+  Number(delay.value) ); 
@@ -102,7 +116,7 @@ document.getElementById('delay').addEventListener('change', function() {
 });
 
 len.addEventListener('change', function() {
-   lenValue.innerHTML=len.value +" Weight";
+  lenValue.innerHTML="1 / "+len.value +" Weight";
    chrome.storage.local.set({ "len": Number(len.value) }, function(){
     console.log("len save : "+  Number(len.value) ); 
    });
