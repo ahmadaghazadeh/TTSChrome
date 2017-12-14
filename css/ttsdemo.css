@@ -14,7 +14,9 @@
 
 body {
   font-family: arial, helvetica, sans-serif;
+   scrolling='yes';
 }
+ 
 
 .body_inner {
   padding: 0 32px;

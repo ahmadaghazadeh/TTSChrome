@@ -12,14 +12,14 @@ function speak(utterance, highlightText) {
     'pitch': Number(pitch.value),
     'rate': Number(rate.value),
     'volume': Number(volume.value),
-    'voiceName': voicesSelect.value,
+    'voiceName': document.getElementById('voices').value,
     'onEvent': function(event) {
         console.debug(utteranceIndex, event);
         if (event.type == 'error') {
           console.error(event);
         }
         if (highlightText) {
-          text.setSelectionRange(0, event.charIndex);
+          //text.setSelectionRange(0, event.charIndex);
         }
         if (event.type == 'end' ||
             event.type == 'interrupted' ||
@@ -31,16 +31,24 @@ function speak(utterance, highlightText) {
 			  if(repeatCounter>=repeat.value)
 			  {
 				  sIndex=sIndex+1;
-				  repeatCounter1;
+				  repeatCounter=1;
+				  if((sIndex)==arrayOfLines.length){
+					  document.getElementById('srctext').style.visibility = "visible"
+				  }
 			  }
 			  else{
 				  repeatCounter=repeatCounter+1;
+				  
 			  }
-	          counter.innerHTML=arrayOfLines[sIndex-1].length +" / " +sIndex;
+			  Jump(sIndex);
+			  chrome.storage.local.set({ "sIndex":sIndex }, function(){
+	     	     console.log("sIndex : "+ sIndex ); 
+	          });
+	          counter.innerHTML=(sIndex) +" / " +arrayOfLines.length;
 			  speak(arrayOfLines[sIndex], true);
               ttsStatus.textContent = 'Idle';
               ttsStatusBox.classList.remove('busy');
-            }
+            } 
           });
         }
     }
@@ -52,12 +60,10 @@ function speak(utterance, highlightText) {
   }
   setTimeout(function(){
 	  chrome.tts.speak(utterance, options);
-	  ttsStatus.textContent = 'Busy - '+utterance ;
+	  ttsStatus.textContent = 'Busy' ;
       ttsStatusBox.classList.add('busy');
   }, delayTime);
-  
-
- 
+   
 }
 
 
@@ -111,6 +117,7 @@ function speak(utterance, highlightText) {
 	  for (var i = 0; i < voices.length; i++) {
 		if (voices[i].voiceName === this.value) {
 		    voiceInfo.textContent = JSON.stringify(voices[i], null, 2);
+		   
 		    chrome.storage.local.set({ "voicesSelect":voiceInfo.textContent }, function(){
 	     	  console.log("text srctext : "+ voiceInfo.textContent ); 
 	       });
@@ -125,16 +132,16 @@ function speak(utterance, highlightText) {
 	});
 
 	chrome.tts.getVoices(function(availableVoices) {
-	  voices = availableVoices;
+	   voices = availableVoices;
 	  for (var i = 0; i < voices.length; i++) {
 		voicesSelect.add(new Option(voices[i].voiceName, voices[i].voiceName));
 	  }
-	});
+ 	});
 
 
 	document.getElementById('speak').addEventListener('click', function() {
 	  isRunning=1;
-	  sIndex=0;
+ 	  text.style.visibility = "hidden"
 	  arrayOfLines = text.value.match(/[^\r\n]+/g);
 	  chrome.storage.local.set({ "srctext": text.value }, function(){
 		console.log("text srctext : "+  text.value ); 
@@ -143,10 +150,20 @@ function speak(utterance, highlightText) {
 	});
 	
 	document.getElementById('stop').addEventListener('click', function() {
-	  isRunning=0;
+	   isRunning=0;
+	   document.getElementById('srctext').style.visibility = "visible"
+	});
+	
+	document.getElementById('reset').addEventListener('click', function() {
+	   sIndex=0;
+	    chrome.storage.local.set({ "sIndex":sIndex }, function(){
+	     	     console.log("sIndex : "+ sIndex ); 
+	          });
 	});
 
-
+    document.getElementById('show').addEventListener('click', function() {
+	   document.getElementById('srctext').style.visibility = "visible"
+	});
 
 	 chrome.storage.local.get("delay", function(items){
 		delay.value= items.delay;
@@ -171,19 +188,37 @@ function speak(utterance, highlightText) {
 		console.log("voicesSelect: "+  items ); 
       });
 	  
-	  chrome.storage.local.get("voicesValue", function(items){
-		voicesSelect.value= items.voicesValue;
-		console.log("voicesValue: "+  items ); 
+	  chrome.storage.local.get("voicesSelect", function(items){
+		voiceInfo.textContent= items;
+		console.log("voicesSelect: "+  items ); 
       });
+      
+	  chrome.storage.local.get("voicesValue", function(items){
+	     voicesSelect.value=items.voicesValue;
+	   	console.log("voicesValue: "+  items ); 
+        });
 	  
-	   chrome.storage.local.get("repeat", function(repeat){
-		repeat.value= repeat.repeat;
+	  chrome.storage.local.get("repeat", function(items){
+		repeat.value= items.repeat;
 		repeatValue.innerHTML=repeat.value +" Time";
 		console.log("repeat: "+  items +" Time" ); 
      });
 	 
+	 chrome.storage.local.get("sIndex", function(items){
+		sIndex= items.sIndex;
+		arrayOfLines = text.value.match(/[^\r\n]+/g);
+		counter.innerHTML=(sIndex) +" / " +arrayOfLines.length;
+     });
+	 
   }, 500);
   
+function Jump(line)
+{
+  var ta = document.getElementById("srctext");
+  var lineHeight = ta.clientHeight / ta.rows;
+  var jump = (line-1) * lineHeight;
+  ta.scrollTop = jump;
+}
 
 
  
