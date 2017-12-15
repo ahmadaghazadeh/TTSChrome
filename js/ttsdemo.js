@@ -205,7 +205,13 @@ function speak(utterance, highlightText) {
      });
 	 
 	 chrome.storage.local.get("sIndex", function(items){
-		sIndex= items.sIndex;
+		 if(items.sIndex==undefined)
+		 {
+			sIndex= 1;
+		 }else{
+			 sIndex= items.sIndex;
+		 }
+		
 		arrayOfLines = text.value.match(/[^\r\n]+/g);
 		counter.innerHTML=(sIndex) +" / " +arrayOfLines.length;
      });
